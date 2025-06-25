@@ -1,4 +1,3 @@
-
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,6 +6,8 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ThemeProvider } from '@/components/ThemeProvider';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { trpc } from '@/utils/trpc';
 import { useState, useEffect, useCallback } from 'react';
 import { Trash2, Edit, Plus, Heart, PawPrint } from 'lucide-react';
@@ -23,7 +24,7 @@ const PET_TYPES = [
   { value: 'other', label: '🐾 Other', emoji: '🐾' }
 ];
 
-function App() {
+function AppContent() {
   const [pets, setPets] = useState<Pet[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [editingPet, setEditingPet] = useState<Pet | null>(null);
@@ -139,37 +140,42 @@ function App() {
 
   const getPetTypeColor = (type: string) => {
     const colors: Record<string, string> = {
-      dog: 'bg-amber-100 text-amber-800',
-      cat: 'bg-purple-100 text-purple-800',
-      bird: 'bg-blue-100 text-blue-800',
-      fish: 'bg-cyan-100 text-cyan-800',
-      rabbit: 'bg-pink-100 text-pink-800',
-      hamster: 'bg-orange-100 text-orange-800',
-      other: 'bg-gray-100 text-gray-800'
+      dog: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300',
+      cat: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300',
+      bird: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
+      fish: 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-300',
+      rabbit: 'bg-pink-100 text-pink-800 dark:bg-pink-900/30 dark:text-pink-300',
+      hamster: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300',
+      other: 'bg-gray-100 text-gray-800 dark:bg-gray-800/30 dark:text-gray-300'
     };
     return colors[type.toLowerCase()] || colors.other;
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50">
+    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-indigo-900/20 transition-colors duration-300">
       <div className="container mx-auto p-6 max-w-6xl">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <PawPrint className="h-8 w-8 text-purple-600" />
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-              Pet Management
-            </h1>
-            <Heart className="h-8 w-8 text-pink-500" />
+        {/* Header with Theme Toggle */}
+        <div className="flex justify-between items-start mb-8">
+          <div className="text-center flex-1">
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <PawPrint className="h-8 w-8 text-purple-600 dark:text-purple-400" />
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
+                Pet Management
+              </h1>
+              <Heart className="h-8 w-8 text-pink-500 dark:text-pink-400" />
+            </div>
+            <p className="text-gray-600 dark:text-gray-300 text-lg">Manage your beloved pets with love and care</p>
           </div>
-          <p className="text-gray-600 text-lg">Manage your beloved pets with love and care</p>
+          <div className="ml-8">
+            <ThemeToggle />
+          </div>
         </div>
 
         {/* Create Pet Button */}
         <div className="flex justify-center mb-8">
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
-              <Button size="lg" className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white shadow-lg">
+              <Button size="lg" className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 dark:from-purple-600 dark:to-pink-600 dark:hover:from-purple-700 dark:hover:to-pink-700 text-white shadow-lg">
                 <Plus className="h-5 w-5 mr-2" />
                 Add New Pet
               </Button>
@@ -309,21 +315,21 @@ function App() {
         {isLoading && pets.length === 0 ? (
           <div className="text-center py-12">
             <div className="animate-spin text-4xl mb-4">🐾</div>
-            <p className="text-gray-500">Loading your pets...</p>
+            <p className="text-muted-foreground">Loading your pets...</p>
           </div>
         ) : pets.length === 0 ? (
           <div className="text-center py-12">
             <div className="text-6xl mb-4">🏠</div>
-            <h2 className="text-2xl font-semibold text-gray-700 mb-2">No Pets Yet</h2>
-            <p className="text-gray-500 mb-6">Your pet family is waiting to be built!</p>
-            <p className="text-sm text-gray-400">
+            <h2 className="text-2xl font-semibold text-foreground mb-2">No Pets Yet</h2>
+            <p className="text-muted-foreground mb-6">Your pet family is waiting to be built!</p>
+            <p className="text-sm text-muted-foreground">
               Note: The backend is using stub data. In a real application, pets would be stored in a database.
             </p>
           </div>
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {pets.map((pet: Pet) => (
-              <Card key={pet.id} className="relative overflow-hidden transition-all duration-300 hover:shadow-xl hover:scale-105 bg-white/70 backdrop-blur-sm border-2">
+              <Card key={pet.id} className="relative overflow-hidden transition-all duration-300 hover:shadow-xl hover:scale-105 bg-card/70 backdrop-blur-sm border-2 hover:border-purple-200 dark:hover:border-purple-700">
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
                     <div className="text-3xl">{getPetTypeEmoji(pet.type)}</div>
@@ -331,16 +337,16 @@ function App() {
                       {pet.type}
                     </Badge>
                   </div>
-                  <CardTitle className="text-xl font-bold text-gray-800">
+                  <CardTitle className="text-xl font-bold text-card-foreground">
                     {pet.name}
                   </CardTitle>
-                  <CardDescription className="text-gray-600">
+                  <CardDescription className="text-muted-foreground">
                     {pet.age} {pet.age === 1 ? 'year' : 'years'} old
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center justify-between">
-                    <div className="text-xs text-gray-400">
+                    <div className="text-xs text-muted-foreground">
                       Added: {pet.created_at.toLocaleDateString()}
                     </div>
                     <div className="flex gap-2">
@@ -348,7 +354,7 @@ function App() {
                         size="sm"
                         variant="outline"
                         onClick={() => openEditDialog(pet)}
-                        className="hover:bg-blue-50"
+                        className="hover:bg-blue-50 dark:hover:bg-blue-900/30"
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
@@ -357,7 +363,7 @@ function App() {
                           <Button
                             size="sm"
                             variant="outline"
-                            className="hover:bg-red-50 text-red-600 border-red-200"
+                            className="hover:bg-red-50 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 border-red-200 dark:border-red-800"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -374,7 +380,7 @@ function App() {
                             <AlertDialogCancel>Keep Pet</AlertDialogCancel>
                             <AlertDialogAction
                               onClick={() => handleDeletePet(pet.id)}
-                              className="bg-red-500 hover:bg-red-600"
+                              className="bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700"
                             >
                               Remove Pet
                             </AlertDialogAction>
@@ -392,13 +398,21 @@ function App() {
         {/* Footer Note */}
         {pets.length > 0 && (
           <div className="mt-12 text-center">
-            <p className="text-sm text-gray-400 bg-white/50 backdrop-blur-sm rounded-lg p-3 inline-block">
+            <p className="text-sm text-muted-foreground bg-card/50 backdrop-blur-sm rounded-lg p-3 inline-block border">
               💡 Note: This app uses stub backend handlers. In production, pets would be stored in a real database.
             </p>
           </div>
         )}
       </div>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <ThemeProvider>
+      <AppContent />
+    </ThemeProvider>
   );
 }
 
