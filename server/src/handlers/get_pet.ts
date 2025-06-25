@@ -1,9 +1,23 @@
 
+import { db } from '../db';
+import { petsTable } from '../db/schema';
+import { eq } from 'drizzle-orm';
 import { type GetPetInput, type Pet } from '../schema';
 
 export const getPet = async (input: GetPetInput): Promise<Pet | null> => {
-    // This is a placeholder declaration! Real code should be implemented here.
-    // The goal of this handler is fetching a single pet record by ID from the database.
-    // Should query the petsTable for the specific pet ID and return the pet or null if not found.
-    return Promise.resolve(null);
+  try {
+    const result = await db.select()
+      .from(petsTable)
+      .where(eq(petsTable.id, input.id))
+      .execute();
+
+    if (result.length === 0) {
+      return null;
+    }
+
+    return result[0];
+  } catch (error) {
+    console.error('Pet retrieval failed:', error);
+    throw error;
+  }
 };

@@ -1,9 +1,19 @@
 
+import { db } from '../db';
+import { petsTable } from '../db/schema';
 import { type Pet } from '../schema';
+import { desc } from 'drizzle-orm';
 
 export const getPets = async (): Promise<Pet[]> => {
-    // This is a placeholder declaration! Real code should be implemented here.
-    // The goal of this handler is fetching all pet records from the database.
-    // Should query the petsTable and return all pets ordered by creation date.
-    return Promise.resolve([]);
+  try {
+    const results = await db.select()
+      .from(petsTable)
+      .orderBy(desc(petsTable.created_at))
+      .execute();
+
+    return results;
+  } catch (error) {
+    console.error('Failed to fetch pets:', error);
+    throw error;
+  }
 };
